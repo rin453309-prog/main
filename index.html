@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trang Tỏ Tình Responsive</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@700&family=Mali&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: white;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.8s ease;
+      padding: 20px;
+    }
+
+    #fixed-area {
+      width: 100%;
+      max-width: 350px;
+      margin: 0 auto;
+    }
+
+    #main-img {
+      width: 100%;
+      height: auto;
+    }
+
+    #text {
+      margin-top: 20px;
+      font-size: clamp(20px, 6vw, 28px);
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-weight: 700;
+      color: #333333;
+      text-shadow: 1px 1px 0 #e4e4e4;
+    }
+
+    #button-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+      gap: 10px;
+      padding: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #yes-btn {
+      background: linear-gradient(45deg, #4CAF50, #81C784);
+      box-shadow: 0 4px 10px rgba(72, 180, 97, 0.6);
+      animation: jump 3s ease-in-out infinite;
+    }
+    #yes-btn:hover {
+      background: linear-gradient(45deg, #388E3C, #66BB6A);
+    }
+
+    #no-btn {
+      background: linear-gradient(45deg, #E53935, #EF9A9A);
+      box-shadow: 0 4px 10px rgba(229, 57, 53, 0.6);
+    }
+    #no-btn:hover {
+      background: linear-gradient(45deg, #B71C1C, #E57373);
+    }
+
+    @keyframes jump {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .falling-text {
+      position: fixed;
+      top: -10vh;
+      font-family: 'Mali', cursive;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      color: #ff6f6f;
+      text-shadow: 0 0 5px #e9b5ff;
+      transform-style: preserve-3d;
+    }
+
+    @keyframes fall {
+      0% { top: -10vh; }
+      100% { top: 100vh; }
+    }
+
+    @keyframes starBlink {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="fixed-area">
+    <img id="main-img" src="1.gif" alt="Hình ảnh" />
+    <div id="text">Em cóa yêu anh không!</div>
+  </div>
+
+  <div id="button-container">
+    <button id="yes-btn">Cóo</button>
+    <button id="no-btn">Không</button>
+  </div>
+
+  <!-- Audio -->
+  <audio id="no-music" src="no.mp3"></audio>
+  <audio id="yes-music" src="yes.mp3"></audio>
+
+  <script>
+    const textElement = document.getElementById('text');
+    const yesBtn = document.getElementById('yes-btn');
+    const noBtn = document.getElementById('no-btn');
+    const imgElement = document.getElementById('main-img');
+    const buttonContainer = document.getElementById('button-container');
+
+    const noMusic = document.getElementById("no-music");
+    const yesMusic = document.getElementById("yes-music");
+
+    const noTexts = [
+      "Em chắc chưa đó?",
+      "Cục cưng ơi",
+      "Đừng làm vậy với anh",
+      "Tim anh đang tan vỡ",
+      "Anh sắp khóc rồi đó"
+    ];
+
+    const noBtnTexts = [
+      "Thật sao em",
+      "em chắc chưa đó?",
+      "Đừng làm vậy với anh",
+      "Tim anh đang tan vỡ",
+      "Anh sắp khóc rồi đó"
+    ];
+
+    const noImgs = [
+        "2.gif",
+        "3.gif",
+        "4.gif",
+        "5.gif",
+        "6.gif"
+    ];
+
+    let noClickCount = 0;
+    let yesFontSize = 16;
+    let noMusicPlayed = false;
+
+    // NÚT KHÔNG
+    noBtn.addEventListener('click', () => {
+      if(!noMusicPlayed && noMusic) { 
+        noMusic.currentTime = 0; 
+        noMusic.play().catch(()=>{});
+        noMusicPlayed = true;
+      }
+
+      if (noClickCount < noTexts.length) {
+        textElement.innerText = noTexts[noClickCount];
+        imgElement.src = noImgs[noClickCount];
+        noBtn.innerText = noBtnTexts[noClickCount];
+        noClickCount++;
+
+        yesFontSize += 20;
+        yesBtn.style.fontSize = yesFontSize + "px";
+        yesBtn.style.padding = (10 + noClickCount * 2) + "px " + (20 + noClickCount * 2) + "px";
+      }
+
+      if (noClickCount === noTexts.length) {
+        setTimeout(() => { noBtn.style.display = 'none'; }, 100);
+      }
+    });
+
+    // NÚT CÓ
+    yesBtn.addEventListener('click', () => {
+      if(noMusic) { noMusic.pause(); noMusic.currentTime = 0; }
+      if(yesMusic) { yesMusic.currentTime = 0; yesMusic.play().catch(()=>{}); }
+
+      textElement.style.display = "none";
+      imgElement.style.display = "none";
+      buttonContainer.style.display = "none";
+
+      let starBackground = document.getElementById("star-background");
+      if (!starBackground) {
+        starBackground = document.createElement("div");
+        starBackground.id = "star-background";
+        document.body.appendChild(starBackground);
+        Object.assign(starBackground.style, {
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "rgba(18, 18, 18, 0.95)",
+          zIndex: "-1",
+          pointerEvents: "none",
+          overflow: "hidden"
+        });
+      }
+
+      const starCount = 60;
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement("div");
+        star.className = "star";
+        starBackground.appendChild(star);
+
+        const size = Math.random() * 2 + 1 + "px";
+        const left = Math.random() * 100 + "vw";
+        const top = Math.random() * 100 + "vh";
+        const delay = Math.random() * 3 + "s";
+        const duration = (Math.random() * 2 + 1) + "s";
+
+        star.style.cssText = `
+          position: absolute;
+          width: ${size};
+          height: ${size};
+          background: white;
+          border-radius: 50%;
+          left: ${left};
+          top: ${top};
+          opacity: 0;
+          animation: starBlink ${duration} ease-in-out infinite;
+          animation-delay: ${delay};
+        `;
+      }
+
+      const fallingWords = ["❤️", "Anh yêu em", "Mãi yêu emmm", "Em mãi là của Anh", "Yêu em lắmmm"]; 
+
+      const layers = [
+        { fontSize: 28, opacity: 1,   duration: 4, positions: [] },
+        { fontSize: 22, opacity: 0.8, duration: 5, positions: [] },
+        { fontSize: 18, opacity: 0.7, duration: 6, positions: [] }
+      ];
+
+      function isPositionValid(positions, left) {
+        return positions.every(pos => Math.abs(pos - left) > 8);
+      }
+
+      setInterval(() => {
+        const span = document.createElement("span");
+        span.className = "falling-text";
+        span.textContent = fallingWords[Math.floor(Math.random() * fallingWords.length)];
+
+        const layerIndex = Math.floor(Math.random() * layers.length);
+        const layer = layers[layerIndex];
+
+        let left;
+        let attempts = 0;
+        do {
+          left = Math.random() * 100;
+          attempts++;
+          if (attempts > 30) break;
+        } while (!isPositionValid(layer.positions, left));
+
+        layer.positions.push(left);
+
+        span.style.left = left + "vw";
+        span.style.fontSize = layer.fontSize + "px";
+        span.style.opacity = layer.opacity;
+        span.style.animationDuration = layer.duration + "s";
+        span.style.animationName = "fall";
+
+        document.body.appendChild(span);
+
+        setTimeout(() => {
+          span.remove();
+          const index = layer.positions.indexOf(left);
+          if (index > -1) layer.positions.splice(index, 1);
+        }, layer.duration * 1000 + 500);
+
+      }, 120);
+    });
+  </script>
+</body>
+</html>
